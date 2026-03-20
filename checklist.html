@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tax Return Checklist — Formations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Figtree','Surt Normal',-apple-system,sans-serif;background:#f9f9f6;color:#0d2259;font-size:14px}
+:root{
+  --fn:#0d2259;--fn6:rgba(13,34,89,0.6);--fn3:rgba(13,34,89,0.38);
+  --fb:#0044ca;--fi:#1e73e8;--fib:#e8f0fe;
+  --fs:#00b67a;--fsd:#008a5a;--fsb:#e6f7f1;
+  --fw:#ff9800;--fwd:#c77700;--fwl:#ffb547;
+  --fe:#e81c04;--fed:#ad1000;--feb:#fde8e6;--fee:#f15c4e;
+  --bg:#f9f9f6;--st:rgba(13,34,89,0.12);--dv:rgba(0,0,0,0.09)
+}
+.app-shell{display:flex;height:100vh;overflow:hidden}
+.left-nav{width:200px;flex-shrink:0;background:#eeeef0;display:flex;flex-direction:column;border-right:1px solid rgba(13,34,89,0.08)}
+.left-nav-logo{padding:20px 16px 12px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--fn)}
+.company-pill{margin:0 10px 16px;background:#fff;border:1px solid var(--st);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.company-name{font-size:12px;font-weight:600;color:var(--fn);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.nav-items{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.nav-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:6px;cursor:pointer;font-size:13px;color:rgba(13,34,89,0.7);font-weight:500}
+.nav-item:hover{background:rgba(13,34,89,0.06)}
+.nav-item.active{background:#fff;color:var(--fn);font-weight:600}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:#e81c04;flex-shrink:0}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.top-nav{height:48px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--st);display:flex;align-items:center;justify-content:flex-end;padding:0 20px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--fn);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.main-scroll{flex:1;overflow-y:auto;padding:28px 28px 60px}
+
+h1{font-size:22px;font-weight:700;color:var(--fn)}
+.page-subtitle{font-size:13px;color:var(--fn6);margin-top:3px;margin-bottom:20px}
+
+/* Tab row */
+.tab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px}
+.tab{display:inline-flex;align-items:center;padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--st);color:var(--fn6);background:#fff;white-space:nowrap;transition:all .15s}
+.tab:hover{border-color:rgba(13,34,89,0.3);color:var(--fn)}
+.tab.active{background:var(--fn);color:#fff;border-color:var(--fn)}
+.btn-tax-docs{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--fn);background:#fff;border:1.5px solid var(--st);border-radius:7px;padding:8px 16px;cursor:pointer;flex-shrink:0}
+
+/* Status row */
+.status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.status-left{display:flex;align-items:center;gap:8px}
+.status-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fn3)}
+/* Status — plain text with dot, no pill bg so it's clearly different from count badges */
+.sbadge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.sb-action{color:var(--fed)}
+.sb-review{color:#0c44a0}
+.sb-complete{color:var(--fsd)}
+.sbadge .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sb-action .sdot{display:none}
+.sb-review .sdot{background:var(--fi)}
+.sb-complete .sdot{background:var(--fs)}
+
+
+/* Comment icon on items */
+.comment-btn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:rgba(13,34,89,0.25);background:none;border:none;cursor:pointer;border-radius:4px;flex-shrink:0;transition:color .12s}
+.comment-btn:hover{color:var(--fn6)}
+
+/* Tooltip lives on the badge itself */
+.sbadge{position:relative;cursor:default}
+.tooltip{position:absolute;left:0;top:calc(100% + 7px);background:#0d2259;color:#fff;font-size:11px;line-height:1.55;padding:8px 12px;border-radius:7px;width:240px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;box-shadow:0 4px 16px rgba(13,34,89,0.22);white-space:normal}
+.tooltip a{color:#a8c4ff;text-decoration:underline;pointer-events:all}
+.tooltip::before{content:'';position:absolute;top:-5px;left:16px;border:5px solid transparent;border-bottom-color:#0d2259;border-top:none}
+.sbadge:hover .tooltip{opacity:1}
+
+/* I'm done */
+.done-wrap{position:relative;display:inline-block}
+.btn-done{font-size:13px;font-weight:600;color:var(--fn6);background:#fff;border:1.5px solid var(--st);border-radius:7px;padding:8px 20px;cursor:not-allowed;opacity:.4;transition:all .15s}
+.btn-done.enabled{opacity:1;cursor:pointer}
+.btn-done.enabled:hover{border-color:rgba(13,34,89,0.35);color:var(--fn)}
+.done-tip{position:absolute;right:0;top:calc(100% + 7px);background:#0d2259;color:#fff;font-size:11px;line-height:1.55;padding:8px 12px;border-radius:7px;width:260px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;box-shadow:0 4px 16px rgba(13,34,89,0.22);text-align:left}
+.done-tip::before{content:'';position:absolute;top:-5px;right:18px;border:5px solid transparent;border-bottom-color:#0d2259;border-top:none}
+.done-wrap:hover .done-tip{opacity:1}
+
+/* Sections */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:22px}
+.section-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fn3)}
+.req-dot{width:6px;height:6px;border-radius:50%;background:var(--fe);flex-shrink:0}
+.sug-dot{width:6px;height:6px;border-radius:50%;border:1.5px dashed var(--fn3);flex-shrink:0}
+.sc{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.sc-req{background:var(--feb);color:var(--fed);border:1px solid var(--fee)}
+.sc-sug{background:var(--bg);color:var(--fn3);border:1px solid var(--st)}
+
+/* Info banner — blue */
+.info-banner{background:var(--fib);border:1px solid rgba(30,115,232,0.25);border-radius:8px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#0c44a0;line-height:1.5}
+
+/* Items */
+.item-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.item{background:#fff;border:1px solid var(--st);border-radius:9px;transition:box-shadow .15s}
+.item:hover{box-shadow:0 1px 6px rgba(13,34,89,0.07)}
+.item.sug{border-style:dashed;border-color:rgba(13,34,89,0.16)}
+.item-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px}
+.chk{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--st);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.chk.sug-chk{border-style:dashed}
+.chk.in-review{background:var(--fib);border-color:rgba(30,115,232,0.4)}
+.item-body{flex:1;min-width:0}
+.item-name{font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px}
+.item-type{font-size:11px;color:var(--fn3);margin-bottom:5px}
+.item-desc{font-size:12px;color:var(--fn6);line-height:1.55}
+.item-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;margin-top:1px}
+.item-due{font-size:11px;font-weight:600;color:var(--fwd);white-space:nowrap}
+.btn-action{font-size:11px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:5px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.btn-action:hover{background:#003cb2}
+.btn-action.upload{background:var(--fn)}
+
+.btn-x{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:rgba(13,34,89,0.25);background:none;border:none;cursor:pointer;flex-shrink:0;transition:color .12s;font-size:16px;line-height:1;font-weight:300}
+.btn-x:hover{color:var(--fe)}
+
+.review-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--fib);color:#0c44a0;border:1px solid rgba(30,115,232,0.3);white-space:nowrap}
+
+/* Review toggle */
+.review-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--fn3);padding:8px 0;user-select:none;margin-top:6px}
+.review-toggle:hover{color:var(--fn)}
+.review-items{display:none;flex-direction:column;gap:6px;margin-top:6px}
+.review-items.open{display:flex}
+.item.reviewed{opacity:.65}
+
+/* All review banner */
+.all-review{background:var(--fib);border:1px solid rgba(30,115,232,0.2);border-radius:9px;padding:14px 16px;font-size:13px;color:#0c44a0;line-height:1.6;margin-top:16px}
+.all-review strong{font-weight:700}
+.all-review a{color:var(--fi);font-weight:600;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Left nav -->
+  <div class="left-nav">
+    <div class="left-nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="6" cy="6" r="3" fill="#0d2259"/><circle cx="16" cy="6" r="3" fill="#0d2259"/><circle cx="6" cy="16" r="3" fill="#0d2259"/><circle cx="16" cy="16" r="3" fill="#0d2259"/></svg>
+      Formations
+    </div>
+    <div class="company-pill">
+      <div style="width:28px;height:28px;border-radius:6px;background:#f5c842;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><circle cx="6" cy="6" r="3" fill="#0d2259"/><circle cx="16" cy="6" r="3" fill="#0d2259"/><circle cx="6" cy="16" r="3" fill="#0d2259"/><circle cx="16" cy="16" r="3" fill="#0d2259"/></svg>
+      </div>
+      <span class="company-name">Gigi Enterpris…</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="#0d225961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="nav-items">
+      <div class="nav-item">Dashboard</div>
+      <div class="nav-item">Accounting <div style="display:flex;align-items:center;gap:5px"><span class="nav-dot"></span><span style="color:rgba(13,34,89,0.38);font-size:12px">›</span></div></div>
+      <div class="nav-item">Payroll <span style="color:rgba(13,34,89,0.38);font-size:12px">›</span></div>
+      <div class="nav-item">Invoicing</div>
+      <div class="nav-item active">Taxes <span style="color:rgba(255,255,255,0.55);font-size:12px">›</span></div>
+      <div class="nav-item">Documents</div>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="top-nav"><div class="avatar">GZ</div></div>
+    <div class="main-scroll">
+
+<h1>Tax return checklist</h1>
+      <p class="page-subtitle">Your most urgent return is shown first. Complete required items to keep your filing on track.</p>
+
+      <!-- Tabs + Tax docs -->
+      <div class="tab-row">
+        <div class="tabs">
+          <div class="tab active" id="tab-b" onclick="switchTab('b')">2025 business return</div>
+          <div class="tab" id="tab-p" onclick="switchTab('p')">2025 personal return</div>
+        </div>
+        <button class="btn-tax-docs">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="1.5" width="10" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Tax documents
+        </button>
+      </div>
+
+
+      <!-- ══════════ BUSINESS ══════════ -->
+      <div id="list-b">
+
+        <div class="status-row">
+          <div class="status-left">
+            <span class="status-label">Status</span>
+            <span class="sbadge sb-action" id="b-badge">Action needed<div class="tooltip" id="b-tooltip">Complete all pending checklist items to move your 2025 business return forward.</div></span>
+
+          </div>
+          <div class="done-wrap">
+            <button class="btn-done" id="b-done" onclick="markDone('b')">I'm done</button>
+            <div class="done-tip">Complete all required items to mark this checklist as done.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="var(--fe)" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="var(--fe)" stroke-width="1.25" stroke-linecap="round"/></svg>
+          <span style="font-size:12px;font-weight:600;color:var(--fed)">Internal deadline passed — Feb 15, 2026</span>
+        </div>
+
+        <!-- Required -->
+        <div class="section-hdr">
+          <div class="section-title"><div class="req-dot"></div> Required <span class="sc sc-req" id="b-req-sc">3 left</span></div>
+        </div>
+
+        <div class="item-list" id="b-req">
+
+          <div class="item" id="b-r1">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Confirmation of October health insurance payment</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">Please confirm whether the October health insurance was paid personally, and if so, the amount paid.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r1',true,'b')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item" id="b-r2">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Unknown transactions</div>
+                <div class="item-type">Categorization required</div>
+                <div class="item-desc">There are transactions we couldn't categorize automatically. Please review and categorize them so we can include them accurately.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r2',true,'b')">Categorize</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item" id="b-r3">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Clarification for service income</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">We identified a total service income of <strong>$1,861,204.00</strong> for 2025. Please confirm this amount or provide any adjustments.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r3',true,'b')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Suggested -->
+        <div class="section-hdr">
+          <div class="section-title"><div class="sug-dot"></div> Suggested <span class="sc sc-sug" id="b-sug-sc">2 left</span></div>
+        </div>
+
+        <div class="info-banner">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#0c44a0" stroke-width="1.3"/><path d="M8 7v5M8 5v.25" stroke="#0c44a0" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span><strong>These items aren't required to file,</strong> but completing them helps us find additional deductions and optimize your return. If one doesn't apply to you, remove it — no worries.</span>
+        </div>
+
+        <div class="item-list" id="b-sug">
+
+          <div class="item sug" id="b-s1">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('b-s1',false,'b')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">Business use of home</div>
+                <div class="item-type">Deduction detail <span style="color:var(--fwd);font-weight:600">· May reduce your taxes</span></div>
+                <div class="item-desc">If you use part of your home exclusively for business, you may be eligible for a home office deduction. If this doesn't apply to you, remove it.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-s1',false,'b')">Complete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item sug" id="b-s2">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('b-s2',false,'b')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">1099-NEC forms</div>
+                <div class="item-type">Document upload <span style="color:var(--fwd);font-weight:600">· Required if received</span></div>
+                <div class="item-desc">Upload any 1099-NEC forms your business received from clients this year. If you didn't receive any, remove this item.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action upload" onclick="submit('b-s2',false,'b')">Upload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Under review toggle -->
+        <div id="b-rev-wrap" style="display:none">
+          <div class="review-toggle" onclick="toggleReview('b')">
+            <svg id="b-rev-caret" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform .2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="b-rev-label">Show items under review</span>
+          </div>
+          <div class="review-items" id="b-rev-list"></div>
+        </div>
+
+        <div id="b-all-done" style="display:none">
+          <div class="all-review">
+            <strong>You've completed your checklist</strong> — all items are currently under review by our team. No further action is needed from you right now. You can view your full tax return status <a href="#">here</a>.
+          </div>
+        </div>
+
+      </div><!-- /business -->
+
+
+      <!-- ══════════ PERSONAL ══════════ -->
+      <div id="list-p" style="display:none">
+
+        <div class="status-row">
+          <div class="status-left">
+            <span class="status-label">Status</span>
+            <span class="sbadge sb-action" id="p-badge">Action needed<div class="tooltip" id="p-tooltip">Complete all pending checklist items to move your 2025 personal return forward.</div></span>
+
+          </div>
+          <div class="done-wrap">
+            <button class="btn-done" id="p-done" onclick="markDone('p')">I'm done</button>
+            <div class="done-tip">Complete all required items to mark this checklist as done.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="var(--fwd)" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="var(--fwd)" stroke-width="1.25" stroke-linecap="round"/></svg>
+          <span style="font-size:12px;font-weight:600;color:var(--fwd)">Internal deadline Mar 15, 2026 · <span id="p-days-label">Due in 27 days</span></span>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><div class="req-dot"></div> Required <span class="sc sc-req" id="p-req-sc">1 left</span></div>
+        </div>
+
+        <div class="item-list" id="p-req">
+          <div class="item" id="p-r1">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">W-2 income verification</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">We identified <strong>$87,500</strong> in W-2 income from your primary employer. Please confirm this amount or let us know if there are additional sources.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('p-r1',true,'p')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><div class="sug-dot"></div> Suggested <span class="sc sc-sug" id="p-sug-sc">1 left</span></div>
+        </div>
+        <div class="info-banner">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#0c44a0" stroke-width="1.3"/><path d="M8 7v5M8 5v.25" stroke="#0c44a0" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span><strong>These items aren't required to file,</strong> but completing them helps us find additional deductions and optimize your return. Remove any that don't apply to you.</span>
+        </div>
+        <div class="item-list" id="p-sug">
+          <div class="item sug" id="p-s1">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('p-s1',false,'p')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">Charitable donations</div>
+                <div class="item-type">Deduction detail <span style="color:var(--fwd);font-weight:600">· May reduce your taxes</span></div>
+                <div class="item-desc">If you made charitable donations in 2025, providing the details may allow us to claim a deduction. Remove this if you didn't make any.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('p-s1',false,'p')">Complete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="p-rev-wrap" style="display:block">
+          <div class="review-toggle" onclick="toggleReview('p')">
+            <svg id="p-rev-caret" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform .2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="p-rev-label">Show 1 item under review</span>
+          </div>
+          <div class="review-items" id="p-rev-list">
+          <div class="item reviewed">
+            <div class="item-row">
+              <div class="chk in-review"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2l3 3-3 3" stroke="#1e73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="item-body"><div class="item-name">Retirement contribution confirmation</div></div>
+              <div class="item-right">
+                <div></div>
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <span class="review-badge">Under review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div id="p-all-done" style="display:none">
+          <div class="all-review">
+            <strong>You've completed your checklist</strong> — all items are currently under review by our team. No further action is needed from you right now. You can view your full tax return status <a href="#">here</a>.
+          </div>
+        </div>
+
+      </div><!-- /personal -->
+
+    </div>
+  </div>
+</div>
+
+<script>
+var counts = {
+  b: { req: 3, sug: 2, rev: 0 },
+  p: { req: 1, sug: 1, rev: 1 }  // p-r2 starts in review
+};
+
+var names = {
+  'b-r1':'Confirmation of October health insurance payment',
+  'b-r2':'Unknown transactions','b-r3':'Clarification for service income',
+  'b-s1':'Business use of home','b-s2':'1099-NEC forms',
+  'p-r1':'W-2 income verification','p-s1':'Charitable donations'
+};
+
+function switchTab(t) {
+  ['b','p'].forEach(function(x){
+    document.getElementById('list-'+x).style.display = x===t?'block':'none';
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+}
+
+function submit(id, isReq, t) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition='opacity .2s';
+  el.style.opacity='0';
+  setTimeout(function(){
+    el.remove();
+    if (isReq) counts[t].req = Math.max(0, counts[t].req-1);
+    else       counts[t].sug = Math.max(0, counts[t].sug-1);
+    counts[t].rev++;
+    // Add to review list
+    var revList = document.getElementById(t+'-rev-list');
+    var wrap = document.getElementById(t+'-rev-wrap');
+    var row = document.createElement('div');
+    row.className='item reviewed';
+    row.innerHTML='<div class="item-row"><div class="chk in-review"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2l3 3-3 3" stroke="#1e73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-body"><div class="item-name">'+(names[id]||id)+'</div></div><div class="item-right">
+                <div></div>
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <span class="review-badge">Under review</span>
+                </div>
+              </div></div>';
+    revList.appendChild(row);
+    wrap.style.display='block';
+    var n=counts[t].rev;
+    document.getElementById(t+'-rev-label').textContent='Show '+n+' item'+(n!==1?'s':'')+' under review';
+    updateBadges(t);
+    updateStatus(t);
+    checkAllDone(t);
+  },220);
+}
+
+function removeItem(id, isReq, t) {
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.style.transition='opacity .2s';
+  el.style.opacity='0';
+  setTimeout(function(){
+    el.remove();
+    if(isReq) counts[t].req=Math.max(0,counts[t].req-1);
+    else      counts[t].sug=Math.max(0,counts[t].sug-1);
+    updateBadges(t);
+    checkAllDone(t);
+  },220);
+}
+
+function updateBadges(t) {
+  var rs=document.getElementById(t+'-req-sc');
+  var ss=document.getElementById(t+'-sug-sc');
+  if(rs) rs.textContent=counts[t].req+' left';
+  if(ss) ss.textContent=counts[t].sug+' left';
+}
+
+function updateStatus(t) {
+  var badge=document.getElementById(t+'-badge');
+  var tip=document.getElementById(t+'-tooltip');
+  var done=document.getElementById(t+'-done');
+
+  if(counts[t].req>0){
+    badge.className='sbadge sb-action';
+    badge.innerHTML='Action needed<div class="tooltip" id="'+t+'-tooltip">Complete all pending checklist items to move your return forward.</div>';
+    tip.textContent='Complete all pending checklist items to move your return forward.';
+    done.className='btn-done';
+  } else if(counts[t].rev>0){
+    badge.className='sbadge sb-review';
+    badge.innerHTML='<span class="sdot"></span>In review<div class="tooltip" id="'+t+'-tooltip">Your submitted checklist items are under review — no action needed from you right now.</div>';
+    tip.textContent='Your submitted checklist items are under review — no action needed from you right now.';
+    done.className='btn-done enabled';
+  }
+}
+
+function checkAllDone(t) {
+  var req=document.getElementById(t+'-req');
+  var sug=document.getElementById(t+'-sug');
+  var reqEmpty = !req||req.querySelectorAll('.item').length===0;
+  var sugEmpty = !sug||sug.querySelectorAll('.item').length===0;
+  if(reqEmpty && sugEmpty && counts[t].rev>0){
+    var wrap=document.getElementById(t+'-rev-wrap');
+    var banner=document.getElementById(t+'-all-done');
+    if(wrap) wrap.style.display='none';
+    if(banner) banner.style.display='block';
+    updateStatus(t);
+  }
+}
+
+function toggleReview(t) {
+  var list=document.getElementById(t+'-rev-list');
+  var caret=document.getElementById(t+'-rev-caret');
+  var open=list.classList.toggle('open');
+  caret.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+}
+
+// Read ?tab= param on load and switch to the right tab
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var tab = params.get('tab');
+  if (tab === 'b' || tab === 'p') switchTab(tab);
+})();
+
+function markDone(t) {
+  var badge=document.getElementById(t+'-badge');
+  var tip=document.getElementById(t+'-tooltip');
+  var done=document.getElementById(t+'-done');
+  badge.className='sbadge sb-complete';
+  badge.innerHTML='<span class="sdot"></span>Completed<div class="tooltip" id="'+t+'-tooltip">Your checklist has been reviewed and approved — no further action needed. <a href=#>View your return status</a>.</div>';
+  tip.innerHTML='Your checklist has been reviewed and approved — no further action needed. <a href="#">View your return status</a>.';
+  done.textContent='Submitted ✓';
+  done.className='btn-done';
+  done.disabled=true;
+}
+</script>
+</body>
+</html>

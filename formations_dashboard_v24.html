@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formations Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;padding:0;font-family:'Figtree','Surt Normal',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9f9f6;padding:24px;font-size:14px;color:#0d2259}
+:root{--fn:#0d2259;--fn6:rgba(13,34,89,0.6);--fn3:rgba(13,34,89,0.38);--fn1:rgba(13,34,89,0.12);--fb:#0044ca;--fi:#1e73e8;--fib:#e8f0fe;--fib2:rgba(30,115,232,0.1);--fs:#00b67a;--fsd:#008a5a;--fw:#ff9800;--fwd:#c77700;--fwl:#ffb547;--fwb:#fff8e1;--fe:#e81c04;--fed:#ad1000;--feb:#fde8e6;--fee:#f15c4e;--bg:#f9f9f6;--pp:#ffffff;--st:rgba(13,34,89,0.12);--dv:rgba(0,0,0,0.1)}
+
+.card{background:#fff;border:1px solid var(--st);border-radius:8px;padding:16px;margin-bottom:14px}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--fn3);margin-bottom:10px}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.bw{background:var(--fwb);color:var(--fwd);border:1px solid var(--fwl)}
+.be{background:var(--feb);color:var(--fed);border:1px solid var(--fee)}
+.bi{background:var(--fib);color:#0c44a0;border:1px solid rgba(30,115,232,0.3)}
+.bn{background:#f1eff8;color:#3b2f8a;border:1px solid #c5bee8}
+
+.btn-blue{font-size:13px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:6px;padding:10px 18px;cursor:pointer;display:block;width:100%;text-align:center}
+.btn-blue:hover{background:#003cb2}
+.btn-blue:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{font-size:13px;font-weight:600;color:var(--fb);background:transparent;border:1.5px solid var(--fb);border-radius:6px;padding:9px 18px;cursor:pointer;display:block;width:100%;text-align:center}
+.btn-outline:disabled{opacity:.35;cursor:not-allowed}
+.btn-done{font-size:12px;font-weight:500;color:var(--fn6);background:transparent;border:1px solid var(--st);border-radius:6px;padding:8px 18px;cursor:pointer;display:block;width:100%;text-align:center}
+.btn-send{font-size:12px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:6px;padding:7px 16px;cursor:pointer}
+.btn-change{font-size:11px;font-weight:600;color:var(--fi);background:transparent;border:none;cursor:pointer;padding:0;text-decoration:underline}
+.gh{font-size:12px;color:var(--fi);background:transparent;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-weight:500;text-decoration:none;white-space:nowrap}
+.gh-sm{font-size:12px;color:var(--fi);font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}
+.gh-disabled{font-size:12px;color:var(--fn3);cursor:not-allowed;white-space:nowrap}
+
+.m{background:var(--bg);border-radius:6px;padding:14px}
+.sr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.pt{height:6px;background:var(--st);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.grid3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.grid2c{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3c{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cv{transition:transform .2s;display:inline-block}
+.cv.open{transform:rotate(180deg)}
+
+
+.sbadge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.sb-prep{background:#f1eff8;color:#3b2f8a;border:1px solid #c5bee8}
+.sb-oil{background:var(--fwb);color:var(--fwd);border:1px solid var(--fwl)}
+.dl-row{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--dv);flex-wrap:wrap}
+.dl-date{font-size:12px;color:var(--fn6)}
+.dl-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.dl-overdue{background:var(--feb);color:var(--fed);border:1px solid var(--fee)}
+.dl-passed{background:var(--fwb);color:var(--fwd);border:1px solid var(--fwl)}
+
+/* Return cards */
+.rc{border-radius:8px;border:1px solid var(--st);background:#fff;cursor:pointer;transition:box-shadow .15s;margin-bottom:10px}
+.rc:hover{box-shadow:0 2px 8px rgba(13,34,89,0.09)}
+.rc:last-child{margin-bottom:0}
+.rh{padding:14px 16px}
+.up{display:inline-flex;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.04em;margin-bottom:8px}
+.u1{background:var(--fe);color:#fff}
+.u2{background:var(--fn);color:#fff}
+.u3{background:var(--fn3);color:#fff}
+
+/* Stat chips */
+.stat-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--st)}
+.chip strong{font-weight:700;color:var(--fn)}
+.chip span{color:var(--fn6)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,34,89,0.4);z-index:1000;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:780px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-header{padding:18px 22px 16px;border-bottom:1px solid var(--dv);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.modal-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;flex:1;min-height:0}
+.modal-left{padding:22px;border-right:1px solid var(--dv);overflow-y:auto}
+.modal-right{padding:22px;display:flex;flex-direction:column;overflow:hidden}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--fn3);font-size:20px;line-height:1;padding:2px 4px;flex-shrink:0}
+.modal-close:hover{color:var(--fn)}
+
+.ta{width:100%;border:1px solid var(--st);border-radius:6px;padding:10px;font-size:12px;color:var(--fn);background:#fff;resize:none;font-family:inherit}
+.ta:focus{outline:none;border-color:var(--fi)}
+.thread{flex:1;overflow-y:auto;margin-bottom:12px;min-height:40px}
+.tm{padding:8px 0;border-bottom:1px solid var(--dv);font-size:12px}
+.tm:last-child{border-bottom:none}
+.divider{border:none;border-top:1px solid var(--dv);margin:16px 0}
+
+/* Filing date picker */
+.date-option{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:8px;transition:border-color .15s}
+.date-option:hover{border-color:rgba(30,115,232,0.4)}
+.date-option.selected{border-color:var(--fi);background:var(--fib2)}
+.date-confirmed{background:var(--fib2);border:1.5px solid rgba(30,115,232,0.35);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+</style>
+</head>
+<body><style>
+.app-shell{display:flex;height:100vh;overflow:hidden;background:#f9f9f6}
+.left-nav{width:200px;flex-shrink:0;background:#eeeef0;display:flex;flex-direction:column;padding:0;border-right:1px solid rgba(13,34,89,0.08)}
+.left-nav-logo{padding:20px 16px 12px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#0d2259}
+.left-nav-logo svg{flex-shrink:0}
+.company-pill{margin:0 10px 16px;background:#fff;border:1px solid rgba(13,34,89,0.12);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.company-icon{width:28px;height:28px;border-radius:6px;background:#f5c842;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.company-name{font-size:12px;font-weight:600;color:#0d2259;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.nav-items{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.nav-item{display:flex;align-items:center;justify-content:space-between;padding:10px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:rgba(13,34,89,0.7);font-weight:500}
+.nav-item:hover{background:rgba(13,34,89,0.06)}
+.nav-item.active{background:#fff;color:#0d2259;font-weight:600}
+.nav-item-left{display:flex;align-items:center;gap:8px}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:#e81c04;flex-shrink:0}
+.nav-chevron{color:rgba(13,34,89,0.38);font-size:12px}
+.top-nav{height:48px;flex-shrink:0;background:#fff;border-bottom:1px solid rgba(13,34,89,0.1);display:flex;align-items:center;justify-content:flex-end;padding:0 20px;gap:14px}
+.top-nav-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:rgba(13,34,89,0.5);cursor:pointer;border-radius:6px}
+.top-nav-icon:hover{background:rgba(13,34,89,0.06);color:#0d2259}
+.avatar{width:34px;height:34px;border-radius:50%;background:#0d2259;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;letter-spacing:.02em}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-scroll{flex:1;overflow-y:auto;padding:24px}
+</style>
+
+<div class="app-shell">
+
+  <div class="left-nav">
+    <div class="left-nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="6" cy="6" r="3" fill="#0d2259"/><circle cx="16" cy="6" r="3" fill="#0d2259"/><circle cx="6" cy="16" r="3" fill="#0d2259"/><circle cx="16" cy="16" r="3" fill="#0d2259"/></svg>
+      Formations
+    </div>
+    <div class="company-pill">
+      <div class="company-icon">
+        <svg width="14" height="14" viewBox="0 0 22 22" fill="none"><circle cx="6" cy="6" r="3" fill="#0d2259"/><circle cx="16" cy="6" r="3" fill="#0d2259"/><circle cx="6" cy="16" r="3" fill="#0d2259"/><circle cx="16" cy="16" r="3" fill="#0d2259"/></svg>
+      </div>
+      <span class="company-name">Gigi Enterpris…</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="#0d225961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="nav-items">
+      <div class="nav-item active">
+        <span class="nav-item-left">Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-left">Accounting</span>
+        <div style="display:flex;align-items:center;gap:6px"><span class="nav-dot"></span><span class="nav-chevron">›</span></div>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-left">Payroll</span>
+        <span class="nav-chevron">›</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-left">Invoicing</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-left">Taxes</span>
+        <div style="display:flex;align-items:center;gap:6px"><span class="nav-dot"></span><span class="nav-chevron">›</span></div>
+      </div>
+      <div class="nav-item">
+        <span class="nav-item-left">Documents</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="top-nav">
+      <div class="avatar">GZ</div>
+    </div>
+    <div class="main-scroll" id="main-scroll">
+
+
+<!-- Bank banner -->
+<div style="background:var(--feb);border:1.5px solid var(--fee);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:10px">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#e81c04" stroke-width="1.5"/><path d="M10 5v6M10 13.5v1" stroke="#e81c04" stroke-width="1.75" stroke-linecap="round"/></svg>
+    <div><p style="font-size:13px;font-weight:700;color:var(--fed);margin-bottom:2px">Your business bank connection is broken</p><p style="font-size:12px;color:var(--fed);opacity:.8">Your books are paused. Transactions can't sync until this is fixed.</p></div>
+  </div>
+  <button style="font-size:13px;font-weight:600;color:#fff;background:var(--fe);border:none;border-radius:6px;padding:8px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Fix bank connection</button>
+</div>
+
+<!-- Header -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+  <div><p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:2px">Hey there, Gigi</p></div>
+  <div style="background:var(--fib);border:1px solid rgba(30,115,232,0.25);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="#1e73e8" stroke-width="1.5"/><path d="M2 7h12M5 1v4M11 1v4" stroke="#1e73e8" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span style="font-size:12px;font-weight:600;color:#0c44a0">Tax season is here — your next steps are below. Let's get it done.</span>
+  </div>
+</div>
+
+<!-- Tax returns -->
+
+<div class="card">
+  <div class="sr"><div><p style="font-size:16px;font-weight:700;color:var(--fn)">Your action items</p><p style="font-size:12px;color:var(--fn6);margin-top:2px">The things that need you right now</p></div></div>
+
+  <div class="rc" style="border-color:var(--fee)" onclick="openModal('r1')">
+    <div class="rh">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--fe);color:#fff;margin-bottom:6px;letter-spacing:.03em" id="r1-due-pill">Overdue</span><p style="font-size:14px;font-weight:700;color:var(--fn)">2022 personal return</p></div>
+        <span class="sbadge sb-oil">Action needed</span>
+      </div>
+      <p style="font-size:11px;color:var(--fn6);line-height:1.5;margin-bottom:10px">We're waiting on documents from you before we can continue preparing this return.</p>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fn6);margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:var(--fe);flex-shrink:0"></div><span><strong style="font-size:13px;font-weight:700;color:var(--fed)">5</strong> items left to complete</span></div>
+
+      <div style="margin-top:10px" onclick="event.stopPropagation()"><button class="btn-blue" style="width:auto;font-size:12px;padding:7px 16px">Complete tax checklist</button></div>
+      <div style="border-top:1px solid var(--dv);padding-top:10px;margin-top:12px">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fn3);margin-bottom:6px">Preferred filing date</p>
+        <div id="r1-unset" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--fn3)">Not set</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:1.5px solid rgba(30,115,232,0.4);border-radius:99px;padding:3px 10px;cursor:pointer" onclick="openFilingPicker('r1');event.stopPropagation()">Set date</button>
+        </div>
+        <div id="r1-set" style="display:none;align-items:center;justify-content:space-between">
+          <span style="font-size:13px;font-weight:600;color:var(--fn)" id="r1-date-text">—</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" onclick="openFilingPicker('r1');event.stopPropagation()">Change</button>
+        </div>
+        <div id="r1-picker" style="display:none;background:var(--bg);border:1px solid var(--st);border-radius:8px;padding:12px;margin-top:8px">
+          <p style="font-size:12px;font-weight:600;color:var(--fn);margin-bottom:8px">Choose your preferred filing date</p>
+          <label id="r1-opt-apr" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:6px" onclick="selectFiling('r1','apr');event.stopPropagation()">
+            <input type="radio" name="r1-filing" value="apr" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">April 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">Standard IRS deadline</p></div>
+          </label>
+          <label id="r1-opt-ext" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:8px" onclick="selectFiling('r1','ext');event.stopPropagation()">
+            <input type="radio" name="r1-filing" value="ext" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">Oct 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">File by extension</p></div>
+          </label>
+          <button id="r1-confirm" disabled onclick="confirmFiling('r1');event.stopPropagation()" style="font-size:12px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:6px;padding:7px 14px;cursor:pointer;width:100%;opacity:.35">Confirm</button>
+          <button onclick="closeFilingPicker('r1');event.stopPropagation()" style="font-size:11px;color:var(--fn3);background:none;border:none;cursor:pointer;width:100%;margin-top:6px;text-align:center">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="rc" onclick="openModal('r2')">
+    <div class="rh">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--fe);color:#fff;margin-bottom:6px;letter-spacing:.03em" id="r2-due-pill">Overdue</span><p style="font-size:14px;font-weight:700;color:var(--fn)">2025 business return</p></div>
+        <span class="sbadge sb-oil">Action needed</span>
+      </div>
+      <p style="font-size:11px;color:var(--fn6);line-height:1.5;margin-bottom:10px">We're waiting on documents from you before we can continue preparing this return.</p>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fn6);margin-bottom:2px"><div style="width:7px;height:7px;border-radius:50%;background:var(--fw);flex-shrink:0"></div><span><strong style="font-size:13px;font-weight:700;color:var(--fwd)">12</strong> items left to complete</span></div>
+
+      <div style="margin-top:10px" onclick="event.stopPropagation()"><button class="btn-blue" style="width:auto;font-size:12px;padding:7px 16px">Complete tax checklist</button></div>
+      <div style="border-top:1px solid var(--dv);padding-top:10px;margin-top:12px">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fn3);margin-bottom:6px">Preferred filing date</p>
+        <div id="r2-unset" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--fn3)">Not set</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:1.5px solid rgba(30,115,232,0.4);border-radius:99px;padding:3px 10px;cursor:pointer" onclick="openFilingPicker('r2');event.stopPropagation()">Set date</button>
+        </div>
+        <div id="r2-set" style="display:none;align-items:center;justify-content:space-between">
+          <span style="font-size:13px;font-weight:600;color:var(--fn)" id="r2-date-text">—</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" onclick="openFilingPicker('r2');event.stopPropagation()">Change</button>
+        </div>
+        <div id="r2-picker" style="display:none;background:var(--bg);border:1px solid var(--st);border-radius:8px;padding:12px;margin-top:8px">
+          <p style="font-size:12px;font-weight:600;color:var(--fn);margin-bottom:8px">Choose your preferred filing date</p>
+          <label id="r2-opt-apr" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:6px" onclick="selectFiling('r2','apr');event.stopPropagation()">
+            <input type="radio" name="r2-filing" value="apr" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">April 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">Standard IRS deadline</p></div>
+          </label>
+          <label id="r2-opt-ext" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:8px" onclick="selectFiling('r2','ext');event.stopPropagation()">
+            <input type="radio" name="r2-filing" value="ext" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">Oct 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">File by extension</p></div>
+          </label>
+          <button id="r2-confirm" disabled onclick="confirmFiling('r2');event.stopPropagation()" style="font-size:12px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:6px;padding:7px 14px;cursor:pointer;width:100%;opacity:.35">Confirm</button>
+          <button onclick="closeFilingPicker('r2');event.stopPropagation()" style="font-size:11px;color:var(--fn3);background:none;border:none;cursor:pointer;width:100%;margin-top:6px;text-align:center">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rc" onclick="openModal('r3')" style="margin-bottom:0">
+    <div class="rh">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--fwb);color:var(--fwd);border:1px solid var(--fwl);margin-bottom:6px;letter-spacing:.03em" id="r3-due-pill">Due Mar 15</span><p style="font-size:14px;font-weight:700;color:var(--fn)">2025 personal return</p></div>
+        <span class="sbadge sb-prep">In preparation</span>
+      </div>
+      <p style="font-size:11px;color:var(--fn3);line-height:1.5;margin-bottom:10px">We're building your checklist. Nothing to do yet — let us know your preferred filing date.</p>
+      <div style="border-top:1px solid var(--dv);padding-top:10px;margin-top:12px">
+        <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--fn3);margin-bottom:6px">Preferred filing date</p>
+        <div id="r3-unset" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--fn3)">Not set</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:1.5px solid rgba(30,115,232,0.4);border-radius:99px;padding:3px 10px;cursor:pointer" onclick="openFilingPicker('r3');event.stopPropagation()">Set date</button>
+        </div>
+        <div id="r3-set" style="display:none;align-items:center;justify-content:space-between">
+          <span style="font-size:13px;font-weight:600;color:var(--fn)" id="r3-date-text">—</span>
+          <button style="font-size:11px;font-weight:600;color:var(--fi);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0" onclick="openFilingPicker('r3');event.stopPropagation()">Change</button>
+        </div>
+        <div id="r3-picker" style="display:none;background:var(--bg);border:1px solid var(--st);border-radius:8px;padding:12px;margin-top:8px">
+          <p style="font-size:12px;font-weight:600;color:var(--fn);margin-bottom:8px">Choose your preferred filing date</p>
+          <label id="r3-opt-apr" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:6px;transition:border-color .12s" onclick="selectFiling('r3','apr');event.stopPropagation()">
+            <input type="radio" name="r3-filing" value="apr" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">April 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">Standard IRS deadline</p></div>
+          </label>
+          <label id="r3-opt-ext" style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:7px;border:1.5px solid var(--st);cursor:pointer;margin-bottom:8px;transition:border-color .12s" onclick="selectFiling('r3','ext');event.stopPropagation()">
+            <input type="radio" name="r3-filing" value="ext" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div><p style="font-size:12px;font-weight:600;color:var(--fn)">Oct 15, 2026</p><p style="font-size:11px;color:var(--fn6);margin-top:1px">File by extension</p></div>
+          </label>
+          <button id="r3-confirm" disabled onclick="confirmFiling('r3');event.stopPropagation()" style="font-size:12px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:6px;padding:7px 14px;cursor:pointer;width:100%;opacity:.35">Confirm</button>
+          <button onclick="closeFilingPicker('r3');event.stopPropagation()" style="font-size:11px;color:var(--fn3);background:none;border:none;cursor:pointer;width:100%;margin-top:6px;text-align:center">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid var(--dv);margin:14px 0 10px;padding-top:14px">
+    <p style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--fn3);margin-bottom:10px">Other to-dos</p>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--dv)">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Update gross income forecast</p><p style="font-size:11px;color:var(--fn3)">2026 · not yet set</p></div>
+        <a class="gh" href="#" style="font-size:11px">Go →</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--dv)">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Log business miles</p><p style="font-size:11px;color:var(--fn3)">2026 tax year</p></div>
+        <a class="gh" href="#" style="font-size:11px">Go →</a>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Categorize transactions</p><p style="font-size:11px;color:var(--fn3)">2026 tax year · 12 unknown</p></div>
+        <a class="gh" href="#" style="font-size:11px">Go →</a>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:6px">
+    <a href="#full-todos" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0d2259;background:transparent;border:1.5px solid #0d2259;border-radius:6px;padding:5px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;letter-spacing:.01em" onclick="showFullTodos();return false;">View all to-dos <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="#0d2259" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Modal R1 — Overdue, 3 required items remaining: no "I'm done" -->
+<div class="modal-overlay" id="modal-r1" onclick="closeOnOverlay(event,'modal-r1')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="up u1" style="margin-bottom:6px">Priority #1</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap"><p style="font-size:16px;font-weight:700;color:var(--fn)">2022 personal return</p><span class="sbadge sb-oil">Action needed</span></div>
+
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-r1')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">What to do next</p>
+        <button class="btn-blue" onclick="closeModal('modal-r1');openChecklist('22p')">Complete tax checklist</button>
+        <p style="font-size:11px;color:var(--fn3);text-align:center;margin-top:6px">3 required items are still blocking your return</p>
+        <!-- No "I'm done" — required items remain -->
+      </div>
+      <div class="modal-right">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;flex-shrink:0">Notes</p>
+        <div class="thread" id="th-r1">
+          <div class="tm"><p style="font-size:11px;color:var(--fn3);margin-bottom:3px">Megan Barlow · Feb 3</p><p style="color:var(--fn)">Hi Alex — we still need your 2022 bank statements to proceed. Could you upload those when you get a chance?</p></div>
+        </div>
+        <textarea class="ta" id="nt-r1" rows="3" placeholder="Write a note to your Formations team…" style="margin-bottom:8px;flex-shrink:0"></textarea>
+        <button class="btn-send" onclick="snd('r1')">Send note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal R2 — Deadline passed, 9 required remaining: no "I'm done" -->
+<div class="modal-overlay" id="modal-r2" onclick="closeOnOverlay(event,'modal-r2')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="up u2" style="margin-bottom:6px">Priority #2</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap"><p style="font-size:16px;font-weight:700;color:var(--fn)">2025 business return</p><span class="sbadge sb-oil">Action needed</span></div>
+        <p style="font-size:11px;color:var(--fwd);font-weight:500;line-height:1.5">Complete your checklist ASAP and we'll do our best to file on time.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-r2')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">What to do next</p>
+        <button class="btn-blue" onclick="closeModal('modal-r2');openChecklist('b')">Complete tax checklist</button>
+        <p style="font-size:11px;color:var(--fn3);text-align:center;margin-top:6px">9 required · 3 suggested items remaining</p>
+        <!-- No "I'm done" — required items remain -->
+      </div>
+      <div class="modal-right">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;flex-shrink:0">Notes</p>
+        <div class="thread" id="th-r2" style="flex:1"></div>
+        <textarea class="ta" id="nt-r2" rows="3" placeholder="Write a note to your Formations team…" style="margin-bottom:8px;flex-shrink:0"></textarea>
+        <button class="btn-send" onclick="snd('r2')">Send note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal R3 — In preparation -->
+<div class="modal-overlay" id="modal-r3" onclick="closeOnOverlay(event,'modal-r3')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <span class="up u3" style="margin-bottom:6px">Priority #3</span>
+        <p style="font-size:16px;font-weight:700;color:var(--fn);margin-bottom:4px">2025 personal return</p>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">
+          <span class="badge bn">In preparation</span>
+          <p style="font-size:12px;color:var(--fn6)">Internal deadline Mar 15, 2026 · IRS deadline Apr 15, 2026</p>
+        </div>
+        <p style="font-size:11px;color:var(--fn3);line-height:1.5">We're preparing your checklist. Confirm your preferred filing date below so we can plan accordingly.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-r3')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">What to do next</p>
+
+        <!-- Filing date picker -->
+        <div id="date-picker">
+          <p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:10px">Choose your preferred filing date</p>
+          <label class="date-option" id="opt-apr" onclick="selectDate('apr')">
+            <input type="radio" name="filing" value="apr" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--fn)">File by April 15, 2026</p>
+              <p style="font-size:11px;color:var(--fn6);margin-top:2px">Standard deadline — we'll prioritize your return</p>
+            </div>
+          </label>
+          <label class="date-option" id="opt-ext" onclick="selectDate('ext')">
+            <input type="radio" name="filing" value="ext" style="margin-top:2px;accent-color:var(--fi);flex-shrink:0">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--fn)">Oct 15, 2026</p>
+              <p style="font-size:11px;color:var(--fn6);margin-top:2px">File by extension</p>
+            </div>
+          </label>
+          <button class="btn-blue" id="confirm-date-btn" disabled onclick="confirmDate()" style="margin-top:4px">Confirm filing date</button>
+        </div>
+
+        <!-- Confirmed state -->
+        <div id="date-confirmed" style="display:none">
+          <p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:10px">Preferred filing date</p>
+          <div class="date-confirmed">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:#0c44a0" id="confirmed-label"></p>
+              <p style="font-size:11px;color:var(--fn6);margin-top:2px" id="confirmed-sublabel"></p>
+            </div>
+            <button class="btn-change" onclick="changeDate()">Change</button>
+          </div>
+          <p style="font-size:11px;color:var(--fsd);margin-bottom:16px">✓ Saved — your team has been notified</p>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--dv);margin:16px 0">
+        <!-- Checklist not ready: disabled -->
+        <button class="btn-outline" disabled style="opacity:.35;cursor:not-allowed">Complete tax checklist</button>
+        <p style="font-size:11px;color:var(--fn3);text-align:center;margin-top:6px">Your checklist will be available once we've prepared it</p>
+      </div>
+      <div class="modal-right">
+        <p style="font-size:11px;font-weight:600;color:var(--fn3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;flex-shrink:0">Notes</p>
+        <div class="thread" id="th-r3" style="flex:1"></div>
+        <textarea class="ta" id="nt-r3" rows="3" placeholder="Write a note to your Formations team…" style="margin-bottom:8px;flex-shrink:0"></textarea>
+        <button class="btn-send" onclick="snd('r3')">Send note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Main grid -->
+<div class="grid3" style="margin-bottom:14px">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="card" style="margin-bottom:0">
+      <p class="lbl">Financial overview · 2026</p>
+      <div class="grid2c">
+        <div class="m"><p style="font-size:12px;color:var(--fn6);margin-bottom:5px">Income</p><p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:3px">$362,500</p><p style="font-size:11px;color:var(--fn3)">No goal set</p></div>
+        <div class="m"><p style="font-size:12px;color:var(--fn6);margin-bottom:5px">Expenses</p><p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:3px">$147,172</p><p style="font-size:11px;color:var(--fsd)">-75.6% vs last year</p></div>
+        <div class="m"><p style="font-size:12px;color:var(--fn6);margin-bottom:5px">Cash flow</p><p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:3px">$248,324</p><p style="font-size:11px;color:var(--fsd)">+117% vs last month</p></div>
+        <div class="m"><p style="font-size:12px;color:var(--fn6);margin-bottom:5px">Wages</p><p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:3px">$21,722</p><p style="font-size:11px;color:var(--fn6)">33.7% of annual target</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+
+    <div class="card" style="margin-bottom:0">
+    <div class="sr"><div><p style="font-size:16px;font-weight:700;color:var(--fn);margin-bottom:3px">Upcoming payroll</p><p style="font-size:12px;color:var(--fn6)">Next scheduled payroll run</p></div><a href="#" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0d2259;background:transparent;border:1.5px solid #0d2259;border-radius:6px;padding:5px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;letter-spacing:.01em">View payroll<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="#0d2259" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+    <div class="grid3c" style="margin-bottom:14px">
+      <div class="m"><p style="font-size:11px;color:var(--fn6);margin-bottom:4px">Run date</p><p style="font-size:18px;font-weight:700;color:var(--fn)">Apr 1</p><p style="font-size:11px;color:var(--fn3)">13 days away</p></div>
+      <div class="m"><p style="font-size:11px;color:var(--fn6);margin-bottom:4px">Pay date</p><p style="font-size:18px;font-weight:700;color:var(--fn)">Apr 4</p><p style="font-size:11px;color:var(--fn3)">Direct deposit</p></div>
+      <div class="m" style="border:1px solid var(--fn1)"><p style="font-size:11px;color:var(--fn6);margin-bottom:4px">Total cost</p><p style="font-size:18px;font-weight:700;color:var(--fn)">$4,830</p><p style="font-size:11px;color:var(--fn3)">Gross + taxes</p></div>
+    </div>
+    <div style="border-top:1px solid var(--dv);padding-top:12px">
+      <button style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:12px;color:var(--fn6);font-weight:600;padding:0" onclick="tPay()">
+        <svg class="cv" id="pCv" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#0d225961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="pLbl">Show breakdown</span>
+      </button>
+      <div id="pBd" style="display:none;margin-top:12px">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--fn6)">Gross wages (Alex Ziv)</span><span style="font-weight:600;color:var(--fn)">$3,625</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--fn6)">Employer taxes</span><span style="font-weight:600;color:var(--fn)">$831</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--fn6)">Employee taxes withheld</span><span style="font-weight:600;color:var(--fn)">$374</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding-top:7px;border-top:1px solid var(--dv)"><span style="color:var(--fn6)">Employee net pay</span><span style="font-weight:700;color:var(--fsd)">$3,251</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:0">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <p style="font-size:16px;font-weight:700;color:var(--fn)">Profit & Loss <span style="font-size:13px;font-weight:400;color:var(--fn6)">— Net income $237,121</span></p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;border:1px solid var(--st);border-radius:6px;overflow:hidden">
+            <button style="font-size:11px;font-weight:600;padding:5px 12px;border:none;cursor:pointer;background:var(--fn);color:#fff" id="plT" onclick="tPL('this')">This year</button>
+            <button style="font-size:11px;font-weight:600;padding:5px 12px;border:none;cursor:pointer;background:transparent;color:var(--fn6)" id="plY" onclick="tPL('yoy')">vs. last year</button>
+          </div>
+          <a href="#" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0d2259;background:transparent;border:1.5px solid #0d2259;border-radius:6px;padding:5px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;letter-spacing:.01em">View P&L report<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="#0d2259" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:12px">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#1e73e8;display:inline-block"></span><span style="color:var(--fn6)">Income</span></span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#ff9800;display:inline-block"></span><span style="color:var(--fn6)">Expenses</span></span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;height:2.5px;background:#00b67a;display:inline-block;border-radius:2px"></span><span style="color:var(--fn6)">Net income</span></span>
+      </div>
+      <div style="position:relative;width:100%;height:180px"><canvas id="plChart"></canvas></div>
+    </div>
+
+<div class="card" style="margin-bottom:0">
+    <div class="sr"><div><p style="font-size:16px;font-weight:700;color:var(--fn);margin-bottom:3px">2026 tax payment progress</p><p style="font-size:12px;color:var(--fn6)">Projected personal tax liability</p></div><a href="#" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0d2259;background:transparent;border:1.5px solid #0d2259;border-radius:6px;padding:5px 12px;cursor:pointer;text-decoration:none;white-space:nowrap;letter-spacing:.01em">View tax payments<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="#0d2259" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+    <div class="grid3c" style="margin-bottom:14px">
+      <div class="m"><p style="font-size:11px;color:var(--fn6);margin-bottom:4px">Paid so far</p><p style="font-size:18px;font-weight:700;color:var(--fsd)">$231,600</p></div>
+      <div class="m" style="border:1px solid var(--fwl)"><p style="font-size:11px;color:var(--fwd);font-weight:600;margin-bottom:4px">Still owed</p><p style="font-size:18px;font-weight:700;color:var(--fwd)">$58,552</p><p style="font-size:11px;color:var(--fwd);margin-top:3px;font-weight:600">Due Apr 15</p></div>
+      <div class="m"><p style="font-size:11px;color:var(--fn6);margin-bottom:4px">Estimated total</p><p style="font-size:18px;font-weight:700;color:var(--fn)">$290,152</p></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--fn3);margin-bottom:5px"><span>Federal tax liability</span><span>80% paid</span></div>
+    <div style="height:8px;background:var(--st);border-radius:4px;overflow:hidden"><div style="height:100%;width:79.8%;background:var(--fi);border-radius:4px"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--fn3)"><span>$0</span><span>$290,152</span></div>
+  </div>
+
+<div class="card">
+  <p class="lbl" style="margin-bottom:12px">Upcoming deadlines</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--st);border-radius:6px;padding:7px 14px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="#0d225961" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="#0d225961" stroke-width="1.25" stroke-linecap="round"/></svg><span style="font-size:12px">Apr 1 — Payroll run</span></div>
+    <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--st);border-radius:6px;padding:7px 14px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="#0d225961" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="#0d225961" stroke-width="1.25" stroke-linecap="round"/></svg><span style="font-size:12px">Apr 15 — Personal return</span></div>
+    <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--st);border-radius:6px;padding:7px 14px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="#0d225961" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="#0d225961" stroke-width="1.25" stroke-linecap="round"/></svg><span style="font-size:12px">May 1 — Incorporation renewal</span></div>
+    <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--st);border-radius:6px;padding:7px 14px"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="#0d225961" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="#0d225961" stroke-width="1.25" stroke-linecap="round"/></svg><span style="font-size:12px">Sep 15 — Business return</span></div>
+  </div>
+</div>
+
+<script>
+
+var filingSelected = {};
+
+function openFilingPicker(id) {
+  document.getElementById(id + '-picker').style.display = 'block';
+}
+
+function closeFilingPicker(id) {
+  document.getElementById(id + '-picker').style.display = 'none';
+  filingSelected[id + '_pending'] = null;
+  ['apr','ext'].forEach(function(v) {
+    var o = document.getElementById(id + '-opt-' + v);
+    if (o) o.style.borderColor = 'var(--st)';
+  });
+  var btn = document.getElementById(id + '-confirm');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.35'; }
+}
+
+var _dueDates={"1040":{"apr":"Due Mar 15","ext":"Due Sep 15"},"1120s":{"apr":"Due Feb 15","ext":"Due Aug 15"}};
+var _returnTypes={"r1":"1040","r2":"1120s","r3":"1040"};
+function selectFiling(id, val) {
+  filingSelected[id + '_pending'] = val;
+  ['apr','ext'].forEach(function(v) {
+    var o = document.getElementById(id + '-opt-' + v);
+    if (o) { o.style.borderColor = v===val?'var(--fi)':'var(--st)'; o.style.background = v===val?'rgba(30,115,232,0.05)':''; }
+  });
+  document.querySelectorAll('input[name="' + id + '-filing"]').forEach(function(r){ r.checked = r.value===val; });
+  var btn = document.getElementById(id + '-confirm');
+  if (btn) { btn.disabled=false; btn.style.opacity='1'; btn.style.cursor='pointer'; }
+  var pill = document.getElementById(id + '-due-pill');
+  if (pill && pill.textContent !== 'Overdue') {
+    var type = _returnTypes[id];
+    if (type) pill.textContent = _dueDates[type][val]||_dueDates[type]['apr'];
+  }
+}
+
+function confirmFiling(id) {
+  var val = filingSelected[id + '_pending'];
+  if (!val) return;
+  var labels = { apr: 'April 15, 2026', ext: 'Extension — Oct 15, 2026' };
+  filingSelected[id] = val;
+  document.getElementById(id + '-picker').style.display = 'none';
+  document.getElementById(id + '-unset').style.display = 'none';
+  var setRow = document.getElementById(id + '-set');
+  setRow.style.display = 'flex';
+  document.getElementById(id + '-date-text').textContent = labels[val];
+}
+
+function openModal(id){document.getElementById('modal-'+id).classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function closeOnOverlay(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+function snd(id){
+  const ta=document.getElementById('nt-'+id),th=document.getElementById('th-'+id);
+  if(!ta.value.trim())return;
+  const d=document.createElement('div');d.className='tm';
+  d.innerHTML='<p style="font-size:11px;color:var(--fn3);margin-bottom:3px">You · Just now</p><p style="color:var(--fn)">'+ta.value+'</p>';
+  th.appendChild(d);ta.value='';th.scrollTop=th.scrollHeight;
+}
+function done(id){
+  const b=document.getElementById('dn-'+id);
+  b.textContent="Submitted ✓";b.disabled=true;b.style.opacity='.5';b.style.cursor='default';
+}
+let selectedDate=null;
+function selectDate(val){
+  selectedDate=val;
+  document.getElementById('opt-apr').classList.toggle('selected',val==='apr');
+  document.getElementById('opt-ext').classList.toggle('selected',val==='ext');
+  document.querySelectorAll('input[name="filing"]').forEach(r=>{r.checked=r.value===val;});
+  const btn=document.getElementById('confirm-date-btn');
+  btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+}
+function confirmDate(){
+  if(!selectedDate)return;
+  const labels={apr:['April 15, 2026','Standard filing deadline'],ext:['Extension requested','New deadline: October 15, 2026']};
+  document.getElementById('confirmed-label').textContent=labels[selectedDate][0];
+  document.getElementById('confirmed-sublabel').textContent=labels[selectedDate][1];
+  document.getElementById('date-picker').style.display='none';
+  document.getElementById('date-confirmed').style.display='block';
+}
+function changeDate(){
+  document.getElementById('date-picker').style.display='block';
+  document.getElementById('date-confirmed').style.display='none';
+  selectedDate=null;
+  document.querySelectorAll('input[name="filing"]').forEach(r=>{r.checked=false;});
+  ['opt-apr','opt-ext'].forEach(id=>{var el=document.getElementById(id);if(el)el.classList.remove('selected');});
+  var btn=document.getElementById('confirm-date-btn');
+  if(btn){btn.disabled=true;btn.style.opacity='0.4';btn.style.cursor='not-allowed';}
+}
+function tPay(){
+  const bd=document.getElementById('pBd'),c=document.getElementById('pCv'),l=document.getElementById('pLbl');
+  const open=bd.style.display==='none';
+  bd.style.display=open?'block':'none';
+  c.className='cv'+(open?' open':'');
+  l.textContent=open?'Hide breakdown':'Show breakdown';
+}
+const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const inc=[75,120,155,80,0,0,0,0,0,0,0,0],exp=[-45,-55,-50,-40,0,0,0,0,0,0,0,0],net=[30,65,105,40,-5,-5,-5,-5,-5,-5,-5,-5];
+const iL=[60,90,130,140,100,80,110,90,70,120,130,100],eL=[-50,-60,-40,-50,-60,-40,-50,-50,-50,-60,-50,-45],nL=[10,30,90,90,40,40,60,40,20,60,80,55];
+let pl=null,yoy=false;
+function bPL(){
+  if(pl)pl.destroy();
+  const ds=[
+    {type:'bar',data:inc.map((v,i)=>i<4?v:Math.round(iL[i]*.22)),backgroundColor:'#1e73e8',borderRadius:3,barPercentage:.55},
+    {type:'bar',data:exp.map((v,i)=>i<4?v:Math.round(eL[i]*.22)),backgroundColor:'#ff9800',borderRadius:3,barPercentage:.55},
+    {type:'line',data:net.map((v,i)=>i<4?v:-3),borderColor:'#00b67a',borderWidth:2.5,pointRadius:0,tension:.4,fill:false}
+  ];
+  if(yoy){
+    ds.push({type:'bar',data:iL,backgroundColor:'rgba(30,115,232,0.15)',borderRadius:3,barPercentage:.55});
+    ds.push({type:'bar',data:eL,backgroundColor:'rgba(255,152,0,0.15)',borderRadius:3,barPercentage:.55});
+    ds.push({type:'line',data:nL,borderColor:'rgba(0,182,122,0.35)',borderWidth:1.5,pointRadius:0,tension:.4,fill:false,borderDash:[5,4]});
+  }
+  pl=new Chart(document.getElementById('plChart'),{data:{labels:mo,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'rgba(13,34,89,0.38)',autoSkip:false,maxRotation:0}},y:{ticks:{callback:v=>(v<0?'-':'')+'$'+Math.abs(Math.round(v))+'K',font:{size:11},color:'rgba(13,34,89,0.38)'},grid:{color:'rgba(13,34,89,0.07)'},border:{display:false}}}}});
+}
+function tPL(m){
+  yoy=m==='yoy';
+  document.getElementById('plT').style.background=yoy?'transparent':'#0d2259';
+  document.getElementById('plT').style.color=yoy?'rgba(13,34,89,0.6)':'#fff';
+  document.getElementById('plY').style.background=yoy?'#0d2259':'transparent';
+  document.getElementById('plY').style.color=yoy?'#fff':'rgba(13,34,89,0.6)';
+  bPL();
+}
+bPL();
+
+function deadlineLabel(deadlineDate) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const due = new Date(deadlineDate);
+  due.setHours(0,0,0,0);
+  const diff = Math.round((due - today) / (1000*60*60*24));
+  if (diff < 0)  return { text: 'Overdue',   color: 'red' };
+  if (diff === 0) return { text: 'Due today', color: 'red' };
+  if (diff === 1) return { text: 'Tomorrow',  color: 'amber' };
+  if (diff <= 7)  return { text: diff + ' days left', color: 'amber' };
+  const opts = { month: 'short', day: 'numeric' };
+  return { text: 'Due ' + due.toLocaleDateString('en-US', opts), color: 'neutral' };
+}
+
+function applyDeadlinePill(pillId, deadlineDate) {
+  var pill = document.getElementById(pillId);
+  if (!pill) return;
+  var r = deadlineLabel(deadlineDate);
+  pill.textContent = r.text;
+  if (r.color === 'red') {
+    pill.style.background = 'var(--fe)';
+    pill.style.color = '#fff';
+    pill.style.border = 'none';
+  } else if (r.color === 'amber') {
+    pill.style.background = 'var(--fwb)';
+    pill.style.color = 'var(--fwd)';
+    pill.style.border = '1px solid var(--fwl)';
+  } else {
+    pill.style.background = 'var(--bg)';
+    pill.style.color = 'var(--fn6)';
+    pill.style.border = '1px solid var(--st)';
+  }
+}
+
+// P1: overdue (already static red), P2: overdue (already static red)
+// P3: internal deadline Apr 5, 2026 — will show "17 days left" today
+applyDeadlinePill('p3-deadline-pill', '2026-04-05');
+
+</script>
+
+    </div><!-- main-scroll -->
+  </div><!-- main-area -->
+</div><!-- app-shell -->
+
+<!-- Full to-dos page overlay -->
+<div id="full-todos-page" style="display:none;position:fixed;inset:0;background:#f9f9f6;z-index:900;overflow-y:auto">
+  <div style="max-width:860px;margin:0 auto;padding:28px 24px">
+    <!-- Breadcrumb -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:22px;font-size:13px;color:var(--fn6)">
+      <a href="#" onclick="hideFullTodos();return false;" style="color:var(--fi);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Dashboard
+      </a>
+      <span style="color:var(--fn3)">›</span>
+      <span style="color:var(--fn);font-weight:600">All to-dos</span>
+    </div>
+    <p style="font-size:22px;font-weight:700;color:var(--fn);margin-bottom:4px">All action items</p>
+    <p style="font-size:13px;color:var(--fn6);margin-bottom:24px">Everything Formations needs from you, in priority order.</p>
+
+    <!-- Tax returns section -->
+    <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fn3);margin-bottom:12px">Tax returns</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+      <div style="background:#fff;border:1px solid var(--st);border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span class="up u1" style="display:inline-flex">Priority #1</span><p style="font-size:13px;font-weight:700;color:var(--fn)">2022 personal return</p></div><div style="display:flex;align-items:center;gap:6px"><span class="sbadge sb-oil">Action needed</span><span class="dl-tag dl-overdue" style="font-size:11px">Past IRS deadline</span></div></div>
+        <button class="btn-blue" style="font-size:12px;padding:7px 14px;width:auto">Complete tax checklist</button>
+      </div>
+      <div style="background:#fff;border:1px solid var(--st);border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span class="up u2" style="display:inline-flex">Priority #2</span><p style="font-size:13px;font-weight:700;color:var(--fn)">2025 business return</p></div><div style="display:flex;align-items:center;gap:6px"><span class="sbadge sb-oil">Action needed</span><span class="dl-tag dl-passed" style="font-size:11px">Our deadline passed</span></div></div>
+        <button class="btn-blue" style="font-size:12px;padding:7px 14px;width:auto">Complete tax checklist</button>
+      </div>
+      <div style="background:#fff;border:1px solid var(--st);border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span class="up u3" style="display:inline-flex">Priority #3</span><p style="font-size:13px;font-weight:700;color:var(--fn)">2025 personal return</p></div><div style="display:flex;align-items:center;gap:6px"><span class="sbadge sb-prep">In preparation</span><span style="font-size:11px;color:var(--fn3)">Internal deadline Mar 15, 2026</span></div></div>
+        <button class="btn-blue" style="font-size:12px;padding:7px 14px;width:auto">Choose filing date</button>
+      </div>
+    </div>
+
+    <!-- To-dos section -->
+    <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fn3);margin-bottom:12px">Other to-dos</p>
+    <div style="background:#fff;border:1px solid var(--st);border-radius:8px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--dv)">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Update gross income forecast</p><p style="font-size:11px;color:var(--fn3)">2026 · not yet set</p></div>
+        <button class="btn-blue" style="font-size:12px;padding:6px 14px;width:auto">Go</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--dv)">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Log business miles</p><p style="font-size:11px;color:var(--fn3)">2026 tax year</p></div>
+        <button class="btn-blue" style="font-size:12px;padding:6px 14px;width:auto">Go</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--dv)">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Categorize transactions</p><p style="font-size:11px;color:var(--fn3)">2026 tax year · 12 unknown</p></div>
+        <button class="btn-blue" style="font-size:12px;padding:6px 14px;width:auto">Go</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px">
+        <div><p style="font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px">Review payroll settings</p><p style="font-size:11px;color:var(--fn3)">Confirm withholding for 2026</p></div>
+        <button class="btn-blue" style="font-size:12px;padding:6px 14px;width:auto">Go</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showFullTodos(){
+  document.getElementById('full-todos-page').style.display='block';
+  document.getElementById('main-scroll').style.overflow='hidden';
+}
+function hideFullTodos(){
+  document.getElementById('full-todos-page').style.display='none';
+  document.getElementById('main-scroll').style.overflow='auto';
+}
+</script>
+
+<!-- ══════════════════════════════════════════════════════
+     CHECKLIST OVERLAY — shown when "Complete tax checklist" is clicked
+     ══════════════════════════════════════════════════════ -->
+<style id="checklist-styles">
+/* Namespace checklist styles to avoid conflicts */
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Figtree','Surt Normal',-apple-system,sans-serif;background:#f9f9f6;color:#0d2259;font-size:14px}
+:root{
+  --fn:#0d2259;--fn6:rgba(13,34,89,0.6);--fn3:rgba(13,34,89,0.38);
+  --fb:#0044ca;--fi:#1e73e8;--fib:#e8f0fe;
+  --fs:#00b67a;--fsd:#008a5a;--fsb:#e6f7f1;
+  --fw:#ff9800;--fwd:#c77700;--fwl:#ffb547;
+  --fe:#e81c04;--fed:#ad1000;--feb:#fde8e6;--fee:#f15c4e;
+  --bg:#f9f9f6;--st:rgba(13,34,89,0.12);--dv:rgba(0,0,0,0.09)
+}
+.app-shell{display:flex;height:100vh;overflow:hidden}
+.left-nav{width:200px;flex-shrink:0;background:#eeeef0;display:flex;flex-direction:column;border-right:1px solid rgba(13,34,89,0.08)}
+.left-nav-logo{padding:20px 16px 12px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--fn)}
+.company-pill{margin:0 10px 16px;background:#fff;border:1px solid var(--st);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.company-name{font-size:12px;font-weight:600;color:var(--fn);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.nav-items{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.nav-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:6px;cursor:pointer;font-size:13px;color:rgba(13,34,89,0.7);font-weight:500}
+.nav-item:hover{background:rgba(13,34,89,0.06)}
+.nav-item.active{background:#fff;color:var(--fn);font-weight:600}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:#e81c04;flex-shrink:0}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.top-nav{height:48px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--st);display:flex;align-items:center;justify-content:flex-end;padding:0 20px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--fn);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.main-scroll{flex:1;overflow-y:auto;padding:28px 28px 60px}
+
+h1{font-size:22px;font-weight:700;color:var(--fn)}
+.page-subtitle{font-size:13px;color:var(--fn6);margin-top:3px;margin-bottom:20px}
+
+/* Tab row */
+.tab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px}
+.tab{display:inline-flex;align-items:center;padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--st);color:var(--fn6);background:#fff;white-space:nowrap;transition:all .15s}
+.tab:hover{border-color:rgba(13,34,89,0.3);color:var(--fn)}
+.tab.active{background:var(--fn);color:#fff;border-color:var(--fn)}
+.btn-tax-docs{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--fn);background:#fff;border:1.5px solid var(--st);border-radius:7px;padding:8px 16px;cursor:pointer;flex-shrink:0}
+
+/* Status row */
+.status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.status-left{display:flex;align-items:center;gap:8px}
+.status-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fn3)}
+/* Status — plain text with dot, no pill bg so it's clearly different from count badges */
+.sbadge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.sb-action{color:var(--fed)}
+.sb-review{color:#0c44a0}
+.sb-complete{color:var(--fsd)}
+.sbadge .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sb-action .sdot{display:none}
+.sb-review .sdot{background:var(--fi)}
+.sb-complete .sdot{background:var(--fs)}
+
+
+/* Comment icon on items */
+.comment-btn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:rgba(13,34,89,0.25);background:none;border:none;cursor:pointer;border-radius:4px;flex-shrink:0;transition:color .12s}
+.comment-btn:hover{color:var(--fn6)}
+
+/* Tooltip lives on the badge itself */
+.sbadge{position:relative;cursor:default}
+.tooltip{position:absolute;left:0;top:calc(100% + 7px);background:#0d2259;color:#fff;font-size:11px;line-height:1.55;padding:8px 12px;border-radius:7px;width:240px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;box-shadow:0 4px 16px rgba(13,34,89,0.22);white-space:normal}
+.tooltip a{color:#a8c4ff;text-decoration:underline;pointer-events:all}
+.tooltip::before{content:'';position:absolute;top:-5px;left:16px;border:5px solid transparent;border-bottom-color:#0d2259;border-top:none}
+.sbadge:hover .tooltip{opacity:1}
+
+/* I'm done */
+.done-wrap{position:relative;display:inline-block}
+.btn-done{font-size:13px;font-weight:600;color:var(--fn6);background:#fff;border:1.5px solid var(--st);border-radius:7px;padding:8px 20px;cursor:not-allowed;opacity:.4;transition:all .15s}
+.btn-done.enabled{opacity:1;cursor:pointer}
+.btn-done.enabled:hover{border-color:rgba(13,34,89,0.35);color:var(--fn)}
+.done-tip{position:absolute;right:0;top:calc(100% + 7px);background:#0d2259;color:#fff;font-size:11px;line-height:1.55;padding:8px 12px;border-radius:7px;width:260px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;box-shadow:0 4px 16px rgba(13,34,89,0.22);text-align:left}
+.done-tip::before{content:'';position:absolute;top:-5px;right:18px;border:5px solid transparent;border-bottom-color:#0d2259;border-top:none}
+.done-wrap:hover .done-tip{opacity:1}
+
+/* Sections */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:22px}
+.section-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fn3)}
+.req-dot{width:6px;height:6px;border-radius:50%;background:var(--fe);flex-shrink:0}
+.sug-dot{width:6px;height:6px;border-radius:50%;border:1.5px dashed var(--fn3);flex-shrink:0}
+.sc{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.sc-req{background:var(--feb);color:var(--fed);border:1px solid var(--fee)}
+.sc-sug{background:var(--bg);color:var(--fn3);border:1px solid var(--st)}
+
+/* Info banner — blue */
+.info-banner{background:var(--fib);border:1px solid rgba(30,115,232,0.25);border-radius:8px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#0c44a0;line-height:1.5}
+
+/* Items */
+.item-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.item{background:#fff;border:1px solid var(--st);border-radius:9px;transition:box-shadow .15s}
+.item:hover{box-shadow:0 1px 6px rgba(13,34,89,0.07)}
+.item.sug{border-style:dashed;border-color:rgba(13,34,89,0.16)}
+.item-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px}
+.chk{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--st);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.chk.sug-chk{border-style:dashed}
+.chk.in-review{background:var(--fib);border-color:rgba(30,115,232,0.4)}
+.item-body{flex:1;min-width:0}
+.item-name{font-size:13px;font-weight:600;color:var(--fn);margin-bottom:2px}
+.item-type{font-size:11px;color:var(--fn3);margin-bottom:5px}
+.item-desc{font-size:12px;color:var(--fn6);line-height:1.55}
+.item-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;margin-top:1px}
+.item-due{font-size:11px;font-weight:600;color:var(--fwd);white-space:nowrap}
+.btn-action{font-size:11px;font-weight:600;color:#fff;background:var(--fb);border:none;border-radius:5px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.btn-action:hover{background:#003cb2}
+.btn-action.upload{background:var(--fn)}
+
+.btn-x{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:rgba(13,34,89,0.25);background:none;border:none;cursor:pointer;flex-shrink:0;transition:color .12s;font-size:16px;line-height:1;font-weight:300}
+.btn-x:hover{color:var(--fe)}
+
+.review-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--fib);color:#0c44a0;border:1px solid rgba(30,115,232,0.3);white-space:nowrap}
+
+/* Review toggle */
+.review-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--fn3);padding:8px 0;user-select:none;margin-top:6px}
+.review-toggle:hover{color:var(--fn)}
+.review-items{display:none;flex-direction:column;gap:6px;margin-top:6px}
+.review-items.open{display:flex}
+.item.reviewed{opacity:.65}
+
+/* All review banner */
+.all-review{background:var(--fib);border:1px solid rgba(30,115,232,0.2);border-radius:9px;padding:14px 16px;font-size:13px;color:#0c44a0;line-height:1.6;margin-top:16px}
+.all-review strong{font-weight:700}
+.all-review a{color:var(--fi);font-weight:600;text-decoration:underline}
+
+.checklist-overlay{display:none;position:fixed;inset:0;background:#f9f9f6;z-index:800;overflow-y:auto;padding:28px 28px 60px}
+.checklist-overlay.open{display:block}
+.chk-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--fi);background:none;border:none;cursor:pointer;padding:0;margin-bottom:18px;text-decoration:none}
+.chk-back:hover{text-decoration:underline}
+</style>
+<div class="checklist-overlay" id="checklist-overlay">
+  <div style="max-width:860px;margin:0 auto">
+    <button class="chk-back" onclick="closeChecklist()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to dashboard
+    </button>
+    <div class="main-scroll" id="chk-scroll" style="padding:0;overflow:visible;height:auto">
+
+
+<h1>Tax return checklist</h1>
+      <p class="page-subtitle">Your most urgent return is shown first. Complete required items to keep your filing on track.</p>
+
+      <!-- Tabs + Tax docs -->
+      <div class="tab-row">
+        <div class="tabs">
+          <div class="tab active" id="tab-b" onclick="switchTab('b')">2025 business return</div>
+          <div class="tab" id="tab-p" onclick="switchTab('p')">2025 personal return</div>
+          <div class="tab" id="tab-22p" onclick="switchTab('22p')">2022 personal return</div>
+        </div>
+        <button class="btn-tax-docs">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="1.5" width="10" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Tax documents
+        </button>
+      </div>
+
+
+      <!-- ══════════ BUSINESS ══════════ -->
+      <div id="list-b">
+
+        <div class="status-row">
+          <div class="status-left">
+            <span class="status-label">Status</span>
+            <span class="sbadge sb-action" id="b-badge">Action needed<div class="tooltip" id="b-tooltip">Complete all pending checklist items to move your 2025 business return forward.</div></span>
+
+          </div>
+          <div class="done-wrap">
+            <button class="btn-done" id="b-done" onclick="markDone('b')">I'm done</button>
+            <div class="done-tip">Complete all required items to mark this checklist as done.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="var(--fe)" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="var(--fe)" stroke-width="1.25" stroke-linecap="round"/></svg>
+          <span style="font-size:12px;font-weight:600;color:var(--fed)">Internal deadline passed — Feb 15, 2026</span>
+        </div>
+
+        <!-- Required -->
+        <div class="section-hdr">
+          <div class="section-title"><div class="req-dot"></div> Required <span class="sc sc-req" id="b-req-sc">3 left</span></div>
+        </div>
+
+        <div class="item-list" id="b-req">
+
+          <div class="item" id="b-r1">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Confirmation of October health insurance payment</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">Please confirm whether the October health insurance was paid personally, and if so, the amount paid.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r1',true,'b')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item" id="b-r2">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Unknown transactions</div>
+                <div class="item-type">Categorization required</div>
+                <div class="item-desc">There are transactions we couldn't categorize automatically. Please review and categorize them so we can include them accurately.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r2',true,'b')">Categorize</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item" id="b-r3">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Clarification for service income</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">We identified a total service income of <strong>$1,861,204.00</strong> for 2025. Please confirm this amount or provide any adjustments.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-r3',true,'b')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Suggested -->
+        <div class="section-hdr">
+          <div class="section-title"><div class="sug-dot"></div> Suggested <span class="sc sc-sug" id="b-sug-sc">2 left</span></div>
+        </div>
+
+        <div class="info-banner">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#0c44a0" stroke-width="1.3"/><path d="M8 7v5M8 5v.25" stroke="#0c44a0" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span><strong>These items aren't required to file,</strong> but completing them helps us find additional deductions and optimize your return. If one doesn't apply to you, remove it — no worries.</span>
+        </div>
+
+        <div class="item-list" id="b-sug">
+
+          <div class="item sug" id="b-s1">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('b-s1',false,'b')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">Business use of home</div>
+                <div class="item-type">Deduction detail <span style="color:var(--fwd);font-weight:600">· May reduce your taxes</span></div>
+                <div class="item-desc">If you use part of your home exclusively for business, you may be eligible for a home office deduction. If this doesn't apply to you, remove it.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('b-s1',false,'b')">Complete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item sug" id="b-s2">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('b-s2',false,'b')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">1099-NEC forms</div>
+                <div class="item-type">Document upload <span style="color:var(--fwd);font-weight:600">· Required if received</span></div>
+                <div class="item-desc">Upload any 1099-NEC forms your business received from clients this year. If you didn't receive any, remove this item.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action upload" onclick="submit('b-s2',false,'b')">Upload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Under review toggle -->
+        <div id="b-rev-wrap" style="display:none">
+          <div class="review-toggle" onclick="toggleReview('b')">
+            <svg id="b-rev-caret" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform .2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="b-rev-label">Show items under review</span>
+          </div>
+          <div class="review-items" id="b-rev-list"></div>
+        </div>
+
+        <div id="b-all-done" style="display:none">
+          <div class="all-review">
+            <strong>You've completed your checklist</strong> — all items are currently under review by our team. No further action is needed from you right now. You can view your full tax return status <a href="#">here</a>.
+          </div>
+        </div>
+
+      </div><!-- /business -->
+
+
+      <!-- ══════════ 2022 PERSONAL ══════════ -->
+      <div id="list-22p" style="display:none">
+
+        <div class="status-row">
+          <div class="status-left">
+            <span class="status-label">Status</span>
+            <span class="sbadge sb-action" id="22p-badge">Action needed<div class="tooltip" id="22p-tooltip">Complete all pending checklist items to move your 2022 personal return forward.</div></span>
+          </div>
+          <div class="done-wrap">
+            <button class="btn-done" id="22p-done" onclick="markDone('22p')">I'm done</button>
+            <div class="done-tip">Complete all required items to mark this checklist as done.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="var(--fe)" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="var(--fe)" stroke-width="1.25" stroke-linecap="round"/></svg>
+          <span style="font-size:12px;font-weight:600;color:var(--fed)">Past IRS deadline — Apr 15, 2023 · File immediately to limit further penalties</span>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><div class="req-dot"></div> Required <span class="sc sc-req" id="22p-req-sc">3 left</span></div>
+        </div>
+
+        <div class="item-list" id="22p-req">
+          <div class="item" id="22p-r1">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">2022 bank statements upload</div>
+                <div class="item-type">Document upload</div>
+              </div>
+              <div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action upload" onclick="submit('22p-r1',true,'22p')">Upload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item" id="22p-r2">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">W-2 income confirmation</div>
+                <div class="item-type">Action confirmation</div>
+              </div>
+              <div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('22p-r2',true,'22p')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item" id="22p-r3">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">Health insurance payment confirmation</div>
+                <div class="item-type">Action confirmation</div>
+              </div>
+              <div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('22p-r3',true,'22p')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="22p-rev-wrap" style="display:none">
+          <div class="review-toggle" onclick="toggleReview('22p')">
+            <svg id="22p-rev-caret" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform .2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="22p-rev-label">Show items under review</span>
+          </div>
+          <div class="review-items" id="22p-rev-list"></div>
+        </div>
+        <div id="22p-all-done" style="display:none">
+          <div class="all-review"><strong>You've completed your checklist</strong> — all items are under review. View your full tax return status <a href="#">here</a>.</div>
+        </div>
+      </div><!-- /2022 personal -->
+
+      <!-- ══════════ PERSONAL ══════════ -->
+      <div id="list-p" style="display:none">
+
+        <div class="status-row">
+          <div class="status-left">
+            <span class="status-label">Status</span>
+            <span class="sbadge sb-action" id="p-badge">Action needed<div class="tooltip" id="p-tooltip">Complete all pending checklist items to move your 2025 personal return forward.</div></span>
+
+          </div>
+          <div class="done-wrap">
+            <button class="btn-done" id="p-done" onclick="markDone('p')">I'm done</button>
+            <div class="done-tip">Complete all required items to mark this checklist as done.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:18px">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="var(--fwd)" stroke-width="1.25"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3" stroke="var(--fwd)" stroke-width="1.25" stroke-linecap="round"/></svg>
+          <span style="font-size:12px;font-weight:600;color:var(--fwd)">Internal deadline Mar 15, 2026 · <span id="p-days-label">Due in 27 days</span></span>
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><div class="req-dot"></div> Required <span class="sc sc-req" id="p-req-sc">1 left</span></div>
+        </div>
+
+        <div class="item-list" id="p-req">
+          <div class="item" id="p-r1">
+            <div class="item-row">
+              <div class="item-body">
+                <div class="item-name">W-2 income verification</div>
+                <div class="item-type">Action confirmation</div>
+                <div class="item-desc">We identified <strong>$87,500</strong> in W-2 income from your primary employer. Please confirm this amount or let us know if there are additional sources.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('p-r1',true,'p')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="section-hdr">
+          <div class="section-title"><div class="sug-dot"></div> Suggested <span class="sc sc-sug" id="p-sug-sc">1 left</span></div>
+        </div>
+        <div class="info-banner">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#0c44a0" stroke-width="1.3"/><path d="M8 7v5M8 5v.25" stroke="#0c44a0" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span><strong>These items aren't required to file,</strong> but completing them helps us find additional deductions and optimize your return. Remove any that don't apply to you.</span>
+        </div>
+        <div class="item-list" id="p-sug">
+          <div class="item sug" id="p-s1">
+            <div class="item-row">
+              <button class="btn-x" onclick="removeItem('p-s1',false,'p')" title="Remove — doesn't apply to me" style="margin-left:14px;margin-right:0">✕</button>
+              <div class="item-body" style="padding-left:10px">
+                <div class="item-name">Charitable donations</div>
+                <div class="item-type">Deduction detail <span style="color:var(--fwd);font-weight:600">· May reduce your taxes</span></div>
+                <div class="item-desc">If you made charitable donations in 2025, providing the details may allow us to claim a deduction. Remove this if you didn't make any.</div>
+              </div>
+<div class="item-right">
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <button class="btn-action" onclick="submit('p-s1',false,'p')">Complete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="p-rev-wrap" style="display:block">
+          <div class="review-toggle" onclick="toggleReview('p')">
+            <svg id="p-rev-caret" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform .2s"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="p-rev-label">Show 1 item under review</span>
+          </div>
+          <div class="review-items" id="p-rev-list">
+          <div class="item reviewed">
+            <div class="item-row">
+              <div class="chk in-review"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2l3 3-3 3" stroke="#1e73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="item-body"><div class="item-name">Retirement contribution confirmation</div></div>
+              <div class="item-right">
+                <div></div>
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <span class="review-badge">Under review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div id="p-all-done" style="display:none">
+          <div class="all-review">
+            <strong>You've completed your checklist</strong> — all items are currently under review by our team. No further action is needed from you right now. You can view your full tax return status <a href="#">here</a>.
+          </div>
+        </div>
+
+      </div><!-- /personal -->
+
+    
+    </div>
+  </div>
+</div>
+<script>
+// ── Checklist JS (namespaced) ──────────────────────────────────────────────
+
+var counts = {
+  '22p': { req: 3, sug: 0, rev: 0 },
+  b: { req: 3, sug: 2, rev: 0 },
+  p: { req: 1, sug: 1, rev: 1 }  // p-r2 starts in review
+};
+
+var names = {
+  'b-r1':'Confirmation of October health insurance payment',
+  'b-r2':'Unknown transactions','b-r3':'Clarification for service income',
+  'b-s1':'Business use of home','b-s2':'1099-NEC forms',
+  'p-r1':'W-2 income verification','p-s1':'Charitable donations'
+};
+
+function switchTab(t) {
+  ['b','p','22p'].forEach(function(x){
+    document.getElementById('list-'+x).style.display = x===t?'block':'none';
+    var tabEl = document.getElementById('tab-'+x); if(tabEl) tabEl.classList.toggle('active',x===t);
+  });
+}
+
+function submit(id, isReq, t) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition='opacity .2s';
+  el.style.opacity='0';
+  setTimeout(function(){
+    el.remove();
+    if (isReq) counts[t].req = Math.max(0, counts[t].req-1);
+    else       counts[t].sug = Math.max(0, counts[t].sug-1);
+    counts[t].rev++;
+    // Add to review list
+    var revList = document.getElementById(t+'-rev-list');
+    var wrap = document.getElementById(t+'-rev-wrap');
+    var row = document.createElement('div');
+    row.className='item reviewed';
+    row.innerHTML='<div class="item-row"><div class="chk in-review"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2l3 3-3 3" stroke="#1e73e8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-body"><div class="item-name">'+(names[id]||id)+'</div></div><div class="item-right">
+                <div></div>
+                <div class="item-btns">
+                  <button class="comment-btn" onclick="event.stopPropagation()" title="Add a comment"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7A1.5 1.5 0 0112.5 12H9l-2.5 2.5V12H3.5A1.5 1.5 0 012 10.5v-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+                  <span class="review-badge">Under review</span>
+                </div>
+              </div></div>';
+    revList.appendChild(row);
+    wrap.style.display='block';
+    var n=counts[t].rev;
+    document.getElementById(t+'-rev-label').textContent='Show '+n+' item'+(n!==1?'s':'')+' under review';
+    updateBadges(t);
+    updateStatus(t);
+    checkAllDone(t);
+  },220);
+}
+
+function removeItem(id, isReq, t) {
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.style.transition='opacity .2s';
+  el.style.opacity='0';
+  setTimeout(function(){
+    el.remove();
+    if(isReq) counts[t].req=Math.max(0,counts[t].req-1);
+    else      counts[t].sug=Math.max(0,counts[t].sug-1);
+    updateBadges(t);
+    checkAllDone(t);
+  },220);
+}
+
+function updateBadges(t) {
+  var rs=document.getElementById(t+'-req-sc');
+  var ss=document.getElementById(t+'-sug-sc');
+  if(rs) rs.textContent=counts[t].req+' left';
+  if(ss) ss.textContent=counts[t].sug+' left';
+}
+
+function updateStatus(t) {
+  var badge=document.getElementById(t+'-badge');
+  var tip=document.getElementById(t+'-tooltip');
+  var done=document.getElementById(t+'-done');
+
+  if(counts[t].req>0){
+    badge.className='sbadge sb-action';
+    badge.innerHTML='Action needed<div class="tooltip" id="'+t+'-tooltip">Complete all pending checklist items to move your return forward.</div>';
+    tip.textContent='Complete all pending checklist items to move your return forward.';
+    done.className='btn-done';
+  } else if(counts[t].rev>0){
+    badge.className='sbadge sb-review';
+    badge.innerHTML='<span class="sdot"></span>In review<div class="tooltip" id="'+t+'-tooltip">Your submitted checklist items are under review — no action needed from you right now.</div>';
+    tip.textContent='Your submitted checklist items are under review — no action needed from you right now.';
+    done.className='btn-done enabled';
+  }
+}
+
+function checkAllDone(t) {
+  var req=document.getElementById(t+'-req');
+  var sug=document.getElementById(t+'-sug');
+  var reqEmpty = !req||req.querySelectorAll('.item').length===0;
+  var sugEmpty = !sug||sug.querySelectorAll('.item').length===0;
+  if(reqEmpty && sugEmpty && counts[t].rev>0){
+    var wrap=document.getElementById(t+'-rev-wrap');
+    var banner=document.getElementById(t+'-all-done');
+    if(wrap) wrap.style.display='none';
+    if(banner) banner.style.display='block';
+    updateStatus(t);
+  }
+}
+
+function toggleReview(t) {
+  var list=document.getElementById(t+'-rev-list');
+  var caret=document.getElementById(t+'-rev-caret');
+  var open=list.classList.toggle('open');
+  caret.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+}
+
+function markDone(t) {
+  var badge=document.getElementById(t+'-badge');
+  var tip=document.getElementById(t+'-tooltip');
+  var done=document.getElementById(t+'-done');
+  badge.className='sbadge sb-complete';
+  badge.innerHTML='<span class="sdot"></span>Completed<div class="tooltip" id="'+t+'-tooltip">Your checklist has been reviewed and approved — no further action needed. <a href=#>View your return status</a>.</div>';
+  tip.innerHTML='Your checklist has been reviewed and approved — no further action needed. <a href="#">View your return status</a>.';
+  done.textContent='Submitted ✓';
+  done.className='btn-done';
+  done.disabled=true;
+}
+
+
+function openChecklist(tab) {
+  var overlay = document.getElementById('checklist-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (tab) switchTab(tab);
+}
+
+function closeChecklist() {
+  document.getElementById('checklist-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+
+</body>
+</html>
